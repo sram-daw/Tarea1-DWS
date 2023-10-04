@@ -1,0 +1,187 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+	<h1 class="display-4">CONSOLA WEB</h1>
+	<p>Aquí programaremos nuestros ejercicios de consola, pero en la web.</p>
+</div>
+
+<p>
+	<!-- INICIO CONSOLA WEB-->
+	<h2>Ejercicio 1</h2>
+	<div>
+		<div>
+			@{
+				Random rnd = new Random();
+				int arraySize = rnd.Next(1, 11);
+				float[] notas = new float[arraySize];
+				float media = 0;
+				<p>El número total de notas es @arraySize.</p>
+				<ul>
+					@for (int i = 0; i < arraySize; i++)
+					{
+						notas[i] = (float)Math.Round(rnd.NextDouble() * 10, 2);
+						media += notas[i];
+						<li>La nota  @i es: @notas[i]</li>
+					}
+				</ul>
+				media = media / arraySize;
+				media = (float)(Math.Truncate(media * 100) / 100);
+				Array.Sort(notas);
+				<p>La nota media es @media.</p>
+				<p>La nota más alta es @notas[arraySize - 1]. </p>
+				<p>La nota más baja es: @notas[0].</p>
+			}
+		</div>
+
+
+
+		<h2>Ejercicio 2</h2>
+		<div>
+			@{
+				int palabraSize;
+				String palabra = "";
+				String[] arrayStrings = new String[5];
+				String[] arrayStringsCopia = new String[5];
+
+				<p>Los strings almacenados son: </p>
+				<ul>
+					@for (int i = 0; i < arrayStrings.Length; i++)
+					{
+						palabraSize = rnd.Next(1, 21);
+						palabra = "";
+						for (int j = 1; j <= palabraSize; j++)
+						{
+							bool isLetra = rnd.Next(2) == 0;
+							if (isLetra)
+							{
+								palabra = palabra + (char)rnd.Next('A', 'Z' + 1);
+							}
+							else
+							{
+								palabra = palabra + rnd.Next(10).ToString();
+
+							}
+						}
+						<p>@palabra</p>
+						arrayStrings[i] = palabra;
+					}
+				</ul>
+				Array.Copy(arrayStrings, arrayStringsCopia, arrayStrings.Length);
+				Array.Reverse(arrayStringsCopia);
+				<p>El orden inverso es: </p>
+				<ul>
+					@foreach (String str in arrayStringsCopia)
+					{
+						<p>@str</p>
+					}
+				</ul>
+			}
+			<h2>Ejercicio 3</h2>
+			<div>
+				@{
+					int arraySize2 = rnd.Next(1, 15);
+					<p>El número de elementos almacenados es @arraySize2.</p>
+					int[] arrayNums = new int[arraySize2];
+					for (int i = 0; i < arraySize2; i++)
+					{
+						arrayNums[i] = rnd.Next(100);
+					}
+					Array.Sort(arrayNums);
+					<p>Los números ordenados de menor a mayor son: </p>
+					<table>
+						<tr>
+							@foreach (int i in arrayNums)
+							{
+								<td style="border: 1px solid black; padding:5px;">@i</td>
+							}
+						</tr>
+					</table>
+				}
+			</div>
+		</div>
+		<h2>Ejercicio 4</h2>
+		<div>
+			@{
+				<h3>Apartado a): Mostrar todas las cartas</h3>
+				@functions {
+					public String[] crearBaraja()
+					{
+						String imgPath = "wwwroot/img";
+						String[] rutaCartas = Directory.GetFiles(imgPath);
+						String[] rutaWebCartas = new String[rutaCartas.Length];
+
+						for (int i = 0; i < rutaCartas.Length; i++)
+						{
+							var webPath = rutaCartas[i].Replace("wwwroot", ""); //transforma la ruta para que sea visible en la web
+							rutaWebCartas[i] = webPath;
+						}
+						return rutaWebCartas;
+					}
+
+				}
+
+				String[] cartas = crearBaraja();
+				@foreach (var i in cartas)
+				{
+					<img src="@i" alt="Carta" style="width: 50px;" />
+				}
+			}
+		</div>
+		<h3>Apartado b): Mostrar carta concreta por número y palo</h3>
+		<div>
+			@{
+				@functions {
+					public String mostrarCarta(String nombreCarta)
+					{
+						String[] baraja = crearBaraja();
+						String rutaCartaSeleccionada = Array.Find(baraja, ruta => ruta.EndsWith(nombreCarta + ".jpg")); ;
+						return rutaCartaSeleccionada;
+
+					}
+				}
+
+				String rutaCartaSeleccionada = mostrarCarta("1Copas");
+				<img src="@rutaCartaSeleccionada" alt="Carta" style="width: 50px;" />
+				String rutaCartaSeleccionada2 = mostrarCarta("7Bastos");
+				<img src="@rutaCartaSeleccionada2" alt="Carta" style="width: 50px;" />
+				String rutaCartaSeleccionada3 = mostrarCarta("12Oro");
+				<img src="@rutaCartaSeleccionada3" alt="Carta" style="width: 50px;" />
+			}
+		</div>
+		<h3>Apartado c): Mostrar carta aleatoria</h3>
+		<div>
+			@{
+				@functions {
+					public String mostrarCartaAleatoria()
+					{
+						Random rnd = new Random();
+						int numeroAleatorio;
+						int indiceAleatorio = rnd.Next(0, 4);
+						String paloAleatorio;
+						String[] listaPalos = new String[] { "Oro", "Bastos", "Copas", "Espadas" };
+						String[] baraja = crearBaraja();
+						String nombreCartaAleatoria;
+						do
+						{
+							numeroAleatorio = rnd.Next(1, 13);
+						} while (numeroAleatorio == 8 || numeroAleatorio == 9); //se excluyen los números que no existen en la baraja
+
+						nombreCartaAleatoria = numeroAleatorio.ToString() + listaPalos[indiceAleatorio];
+
+						String rutaCartaSeleccionada = Array.Find(baraja, ruta => ruta.EndsWith(nombreCartaAleatoria + ".jpg")); ;
+						return rutaCartaSeleccionada;
+
+					}
+				}
+
+				String rutaCartaAleatoria = mostrarCartaAleatoria();
+				<img src="@rutaCartaAleatoria" alt="Carta" style="width: 50px;" id="img-carta-rnd" />
+
+			}
+		</div>
+
+
+		<!-- FIN CONSOLA WEB-->
+	</div>
